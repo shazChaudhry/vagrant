@@ -17,6 +17,7 @@ systemctl restart docker
 SCRIPT
 
 $docker_swarm_init = <<SCRIPT
+sysctl -w vm.max_map_count=262144
 docker swarm init --advertise-addr 192.168.99.101 --listen-addr 192.168.99.101:2377
 docker swarm join-token --quiet manager > /vagrant/manager_token
 docker swarm join-token --quiet worker > /vagrant/worker_token
