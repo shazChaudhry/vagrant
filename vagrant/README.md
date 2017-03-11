@@ -6,4 +6,4 @@
 -	Run "vagrant up" commands. This will setup a Docker swarm cluster; 1xMaster and 1xWorker
 -	Wait for a couple of minutes until execution of Vagrantfile has finished
 -	In your web browser, navigate to <a href="http://node1:9080/">http://node1:9080/</a>. You should see two nodes; one of which is a master and the second one is a worker
-- Run "vagrant ssh node1" to log into the master node
+- Run "vagrant ssh node1" to log into the swarm master node
