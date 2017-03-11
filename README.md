@@ -3,7 +3,7 @@
 ## Tasks:
 
 -	Setting up a docker swarm cluster of 2 nodes
-![alt text](Infra.PNG "Swam cluster")
+-	![alt text](Infra.PNG "Swam cluster")
 
 ## Prerequisists:
 
