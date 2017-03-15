@@ -14,6 +14,6 @@
 
 ## Instructions:
 
-- 	Clone this repo
+- Clone this repo
 -	Change the directory where code is cloned to
--	Change to the technology directory you would like to use in order to stand up a Docker swarm infrastructure
+-	Change to the technology directory (only vagrant at the moment) you would like to use in order to stand up a Docker swarm infrastructure
