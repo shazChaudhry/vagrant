@@ -54,6 +54,7 @@ Vagrant.configure("2") do |config|
 	config.hostmanager.manage_guest = true
 	config.vm.provision :shell, inline: $update_pkg
 	config.vm.provision "docker"
+	config.vm.provision :shell, inline: $docker_experimental_mode
 	config.vm.provision :shell, inline: $install_compose
 
 	config.vm.define "node1", primary: true do |node1|
@@ -63,8 +64,7 @@ Vagrant.configure("2") do |config|
 			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
 			v.customize ["modifyvm", :id, "--memory", 6000]
 			v.customize ["modifyvm", :id, "--name", "node1"]
-		end
-		node1.vm.provision :shell, inline: $docker_experimental_mode
+		end		
 		node1.vm.provision :shell, inline: $docker_swarm_init
 		node1.vm.provision "docker" do |d|
 			d.run "visualizer",
@@ -85,7 +85,6 @@ Vagrant.configure("2") do |config|
 			v.customize ["modifyvm", :id, "--memory", 4000]
 			v.customize ["modifyvm", :id, "--name", "node2"]
 		end
-		node2.vm.provision :shell, inline: $docker_experimental_mode
 		node2.vm.provision :shell, inline: $docker_swarm_join_worker
 	end
 
@@ -97,7 +96,6 @@ Vagrant.configure("2") do |config|
 #			v.customize ["modifyvm", :id, "--memory", 2048]
 #			v.customize ["modifyvm", :id, "--name", "node3"]
 #		end
-#		node3.vm.provision :shell, inline: $docker_experimental_mode
 #		node3.vm.provision :shell, inline: $docker_swarm_join_worker
 #	end
 
@@ -109,7 +107,6 @@ Vagrant.configure("2") do |config|
 #			v.customize ["modifyvm", :id, "--memory", 3072]
 #			v.customize ["modifyvm", :id, "--name", "node4"]
 #		end
-#		node4.vm.provision :shell, inline: $docker_experimental_mode
 #		node4.vm.provision :shell, inline: $docker_swarm_join_manager
 #	end
 
