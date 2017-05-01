@@ -6,10 +6,10 @@
   -	`v.customize ["modifyvm", :id, "--memory", <MEMORY_ALLOCATION>]`
 
 **Prerequisite:**
--	Install latest version of  [Git bash](https://git-scm.com/downloads)
+-	Install latest version of  [Git bash](https://git-scm.com/downloads) and/or [GitHub Desktop](https://help.github.com/desktop/guides/getting-started/)
 -	Install latest version of [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 -	Install latest version of  [Vagrant](https://www.vagrantup.com/intro/getting-started/install.html)
--	Install [Vagrant Host Manager](https://github.com/devopsgroup-io/vagrant-hostmanager) plugin by running ```vagrant plugin install vagrant-hostmanager```. This will update host files on both guest and host machines.
+-	Install [Vagrant Host Manager](https://github.com/devopsgroup-io/vagrant-hostmanager) plugin by running ```vagrant plugin install vagrant-hostmanager``` in Git bash. This will update host files on both guest and host machines.
 
 **Instructions:**
 -	Run ```vagrant up``` command which will setup a Docker swarm cluster; 1xMaster and 1xWorker
