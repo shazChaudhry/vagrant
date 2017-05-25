@@ -36,19 +36,17 @@ SCRIPT
 
 $update_pkg = <<SCRIPT
 echo "============== Updating OS packages ====================="
-apt -y update && apt -y upgrade
-apt install -y python-pip && pip install --upgrade pip
+apt-get update && apt-get install -y python-pip && pip install --upgrade pip
 SCRIPT
 
 $install_compose = <<SCRIPT
 echo "============== Installing docker compose ====================="
-pip install docker-compose
-docker-compose version
+pip install docker-compose && docker-compose version
 SCRIPT
 
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "ubuntu/xenial64"
+	config.vm.box = "xenji/ubuntu-17.04-server"
 	config.hostmanager.enabled = true
 	config.hostmanager.manage_host = true
 	config.hostmanager.manage_guest = true
