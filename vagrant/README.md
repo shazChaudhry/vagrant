@@ -1,5 +1,5 @@
 **User story**
-- As a DevOps team member I want to automate setting up of two ubuntu/xenial64 based nodes with [Vagrant](https://www.vagrantup.com/) for development purpose so that I can distribute Docker Swarm services in a cluster configuration.
+- As a DevOps team member I want to automate setting up of two ubuntu based nodes with [Vagrant](https://www.vagrantup.com/) for development purpose so that I can distribute Docker Swarm services in a cluster configuration.
 
 **Assumptions**
 - Development machine is Windows 10
