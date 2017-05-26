@@ -6,7 +6,7 @@
 </p>
 
 **Assumptions**
-- Infrastucture being setup is required to be _'ubuntu/xenial64'_ based
+- Infrastucture being setup is required to be _'ubuntu'_ based
 
 **Instructions:**
 - Clone this repo
