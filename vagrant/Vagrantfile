@@ -51,14 +51,15 @@ SCRIPT
 
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "xenji/ubuntu-17.04-server"
+#	config.vm.box = "xenji/ubuntu-17.04-server"
+	config.vm.box = "ubuntu/xenial64"
 	config.hostmanager.enabled = true
 	config.hostmanager.manage_host = true
 	config.hostmanager.manage_guest = true
-	config.vm.provision :shell, inline: $update_pkg
+#	config.vm.provision :shell, inline: $update_pkg
 	config.vm.provision "docker"
-	config.vm.provision :shell, inline: $docker_experimental_mode
-	config.vm.provision :shell, inline: $install_compose
+#	config.vm.provision :shell, inline: $docker_experimental_mode
+#	config.vm.provision :shell, inline: $install_compose
 
 	config.vm.define "node1", primary: true do |node1|
 		node1.vm.hostname = 'node1'
