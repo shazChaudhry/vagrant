@@ -13,24 +13,24 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-resource "aws_subnet" "public_subnet_a" {
-  availability_zone       = "eu-west-2a"
-  cidr_block              = "10.0.0.0/24"
-  map_public_ip_on_launch = true
+resource "aws_subnet" "public_subnet" {
   vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = "10.0.0.0/24"
+  availability_zone       = "eu-west-2a"
+  map_public_ip_on_launch = true
 
   tags {
-    Name = "public_subnet_a"
+    Name = "Public subnet"
   }
 }
 
-resource "aws_subnet" "private_subnet_b" {
-  availability_zone       = "eu-west-2b"
-  cidr_block              = "10.0.1.0/24"
+resource "aws_subnet" "private_subnet" {
   vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "eu-west-2a"
 
   tags {
-    Name = "private_subnet_b"
+    Name = "Private subnet"
   }
 }
 
@@ -47,11 +47,38 @@ resource "aws_route_table" "public_routetable" {
   }
 
   tags {
-    label = "custom_route_table"
+    label = "Custom route table"
   }
 }
 
-resource "aws_route_table_association" "public_subnet_a" {
-  subnet_id      = "${aws_subnet.public_subnet_a.id}"
+resource "aws_route_table_association" "public_subnet" {
+  subnet_id      = "${aws_subnet.public_subnet.id}"
   route_table_id = "${aws_route_table.public_routetable.id}"
+}
+
+resource "aws_eip" "nat" {
+  vpc = true
+}
+
+resource "aws_nat_gateway" "nat" {
+  allocation_id = "${aws_eip.nat.id}"
+  subnet_id     = "${aws_subnet.public_subnet.id}"
+}
+
+resource "aws_route_table" "private_routetable" {
+  vpc_id = "${aws_vpc.vpc.id}"
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = "${aws_nat_gateway.nat.id}"
+  }
+
+  tags {
+    label = "Main route table"
+  }
+}
+
+resource "aws_route_table_association" "private_subnet" {
+  subnet_id      = "${aws_subnet.private_subnet.id}"
+  route_table_id = "${aws_route_table.private_routetable.id}"
 }
