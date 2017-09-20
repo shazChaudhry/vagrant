@@ -49,8 +49,8 @@ Execute the following commands to run terraform:
 1. `alias terraform='docker run -it --rm --name terraform -v ~/.aws/credentials:/home/root/.aws/credentials -v $PWD:/terraform -w /terraform hashicorp/terraform'`
 2. `terraform --version`
 3. `terraform init`
-4. `terraform plan`
-5. `terraform apply`
+4. `terraform plan -out terraform.plan`
+5. `terraform apply terraform.plan`
 6. `terraform show`
 
 #### Clean up
@@ -58,6 +58,5 @@ Execute the following commands to run terraform:
 
 #### References
 - Tutorial: https://simonfredsted.com/1459
-- AWS "Scenario 2" blog: https://040code.github.io/2017/06/18/terraform-aws-vpc/
 - AWS "Scenario 2" blog: https://nickcharlton.net/posts/terraform-aws-vpc.html
 - AWS environment with Terraform: https://linuxacademy.com/howtoguides/posts/show/topic/13922-a-complete-aws-environment-with-terraform

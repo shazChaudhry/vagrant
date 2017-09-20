@@ -1,6 +1,6 @@
 provider "aws" {
-  region = "eu-west-2"
-  shared_credentials_file = "/home/root/.aws/credentials"
+  region = "${var.aws_region}"
+  shared_credentials_file = "${var.aws_credentials}"
 }
 
 resource "aws_vpc" "vpc" {
