@@ -35,7 +35,7 @@ On the platform where docker engine is installed, execute the following commands
 1. `alias git='docker run -it --rm --name git -v $PWD:/git -w /git indiehosters/git git'`
 2. `git version`
 3. `git clone https://github.com/shazChaudhry/infra.git`
-4. `sudo chown -R docker infra`
+4. `sudo chown -R $USER infra`
 5. `cd infra/terraform`
 
 Terraform docker image is available at https://hub.docker.com/r/hashicorp/terraform/. Before executing terraform, ensure that you have a "~/.aws/credentials" file with the following content:
