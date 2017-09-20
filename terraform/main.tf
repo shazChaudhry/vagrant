@@ -47,7 +47,7 @@ resource "aws_route_table" "public_routetable" {
   }
 
   tags {
-    label = "Custom route table"
+    label = "public route table"
   }
 }
 
@@ -74,7 +74,7 @@ resource "aws_route_table" "private_routetable" {
   }
 
   tags {
-    label = "Main route table"
+    label = "private route table"
   }
 }
 
