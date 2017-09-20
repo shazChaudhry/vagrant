@@ -1,4 +1,4 @@
-#### User story
+#### User story (WIP)
 As a DevOps team member, I want to build infrastructure _([AWS Scenario 2](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario2.html))_ on AWS using [Terraform](https://www.terraform.io/) for development purpose.
 
 <p align="center">
