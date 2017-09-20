@@ -12,4 +12,6 @@
 *.zip
 *_token
 .vagrant
+.terraform
+terraform.tfstat*
 *.log
