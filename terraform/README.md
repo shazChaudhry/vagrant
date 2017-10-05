@@ -8,9 +8,8 @@ As a DevOps team member, I want to build infrastructure _([AWS Scenario 2](http:
 If you don't have an AWS account, create [free-tier](https://aws.amazon.com/free/) one now.
 
 #### Assumptions
-- You have the latest docker engine installed on your platform. This repository uses docker to execute terraform statements.
-- You have AWS credentials in a safe location:
-  - Create a "~/.aws/credentials" file with the following content
+- Latest version of Docker is installed
+- AWS credentials are available: "~/.aws/credentials"
     ```
     [default]
     aws_access_key_id = <KEY>
@@ -18,16 +17,8 @@ If you don't have an AWS account, create [free-tier](https://aws.amazon.com/free
     ```
 
 #### Prerequisite if standing up a vagrant box
-If of some reason docker can not be run natively on your platform, you should use the provided Vagrantfile to setup a VM which will have a docker engine installed. Vagrant coppies a number of files and folders (like aws credentials) from host to guest machine. Modify the Vagrantfile as per your needs.
-
-Also, ensure you have a "~/.aws/credentials" file on the host machine with the following content:
-  ```
-  [default]
-  aws_access_key_id = <KEY>
-  aws_secret_access_key = <SECRET>
-  ```
-
-- Run `vagrant up` command to setup a VM
+If of some reason docker can not be run natively on your platform, feel free to use the provided Vagrantfile to setup a VM which will have a docker engine installed. Vagrant coppies a number of files and folders (like aws credentials) from host to guest machine _(Modify the Vagrantfile as per your needs)_
+- Run `vagrant up` command to create a VM
 -	Run `vagrant ssh` to log into the VM
 
 #### Instructions
@@ -38,14 +29,7 @@ On the platform where docker engine is installed, execute the following commands
 4. `sudo chown -R $USER infra`
 5. `cd infra/terraform`
 
-Terraform docker image is available at https://hub.docker.com/r/hashicorp/terraform/. Before executing terraform, ensure that you have a "~/.aws/credentials" file with the following content:
-```
-[default]
-aws_access_key_id = <KEY>
-aws_secret_access_key = <SECRET>
-```
-
-Execute the following commands to run terraform:
+Terraform docker image is available at https://hub.docker.com/r/hashicorp/terraform/. Execute the following commands to run terraform:
 1. `alias terraform='docker run -it --rm --name terraform -v ~/.aws/credentials:/home/root/.aws/credentials -v $PWD:/terraform -w /terraform hashicorp/terraform'`
 2. `terraform --version`
 3. `terraform init`
@@ -54,7 +38,7 @@ Execute the following commands to run terraform:
 6. `terraform show`
 
 #### Clean up
-1. `terraform destroy`
+1. `terraform destroy -force`
 
 #### References
 - Tutorial: https://simonfredsted.com/1459

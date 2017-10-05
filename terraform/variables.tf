@@ -1,5 +1,5 @@
 variable "aws_region" {
-  description = "AWS London region to launch servers."
+  description = "AWS London region to launch servers"
   default     = "eu-west-2"
 }
 
