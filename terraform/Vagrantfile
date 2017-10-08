@@ -12,6 +12,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "file", source: "~/.gnupg", destination: "$HOME/.gnupg"
   config.vm.provision "file", source: "~/.gitconfig", destination: "$HOME/.gitconfig"
   config.vm.provision "file", source: "~/.ssh/id_rsa", destination: "$HOME/.ssh/id_rsa"
+  config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
   config.vm.provision "file", source: "~/.ssh/personal.pem", destination: "$HOME/.ssh/personal.pem"
 
 	config.vm.define "node1", primary: true do |node1|

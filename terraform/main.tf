@@ -9,7 +9,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags {
-    Name = "myVPC"
+    Name = "Main VPC"
   }
 }
 
@@ -31,7 +31,7 @@ resource "aws_route_table" "custom_routetable" {
   }
 }
 
-resource "aws_subnet" "public_subnet" {
+resource "aws_subnet" "public" {
   vpc_id                  = "${aws_vpc.vpc.id}"
   cidr_block              = "10.0.0.0/24"
   availability_zone       = "eu-west-2a"
@@ -41,8 +41,8 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-resource "aws_route_table_association" "public_subnet" {
-  subnet_id      = "${aws_subnet.public_subnet.id}"
+resource "aws_route_table_association" "public" {
+  subnet_id      = "${aws_subnet.public.id}"
   route_table_id = "${aws_route_table.custom_routetable.id}"
 }
 
@@ -52,7 +52,7 @@ resource "aws_eip" "nat" {
 
 resource "aws_nat_gateway" "nat" {
   allocation_id = "${aws_eip.nat.id}"
-  subnet_id     = "${aws_subnet.public_subnet.id}"
+  subnet_id     = "${aws_subnet.public.id}"
   depends_on    = ["aws_internet_gateway.igw"]
   tags {
     Name = "gw NAT"
@@ -66,11 +66,11 @@ resource "aws_route_table" "private_routetable" {
     nat_gateway_id = "${aws_nat_gateway.nat.id}"
   }
   tags {
-    Name = "private route table"
+    Name = "Private route table"
   }
 }
 
-resource "aws_subnet" "private_subnet" {
+resource "aws_subnet" "private" {
   vpc_id                  = "${aws_vpc.vpc.id}"
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "eu-west-2b"
@@ -80,7 +80,90 @@ resource "aws_subnet" "private_subnet" {
   }
 }
 
-resource "aws_route_table_association" "private_subnet" {
-  subnet_id      = "${aws_subnet.private_subnet.id}"
+resource "aws_route_table_association" "private" {
+  subnet_id      = "${aws_subnet.private.id}"
   route_table_id = "${aws_route_table.private_routetable.id}"
 }
+
+resource "aws_security_group" "WebServerSG" {
+  name        = "WebServerSG"
+  description = "Security group for public facing ELBs"
+  vpc_id      = "${aws_vpc.vpc.id}"
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_subnet.private.cidr_block}"]
+  }
+  egress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_subnet.private.cidr_block}"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags {
+    Name = "WebServerSG"
+  }
+}
+
+resource "aws_security_group" "DBServerSG" {
+  name        = "DBServerSG"
+  description = "Security group for backend servers and private ELBs"
+  vpc_id      = "${aws_vpc.vpc.id}"
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_subnet.public.cidr_block}"]
+  }
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["${aws_subnet.public.cidr_block}"]
+  }
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self = true
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags {
+    Name = "DBServerSG"
+  }
+}
+
+# resource "aws_key_pair" "auth" {
+#   key_name   = "deployer-key"
+#   public_key = "${file(var.public_key_path)}"
+# }
