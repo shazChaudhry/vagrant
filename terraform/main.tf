@@ -163,7 +163,7 @@ resource "aws_security_group" "DBServerSG" {
   }
 }
 
-# resource "aws_key_pair" "auth" {
-#   key_name   = "deployer-key"
-#   public_key = "${file(var.public_key_path)}"
-# }
+resource "aws_key_pair" "auth" {
+  key_name   = "deployer-key"
+  public_key = "${file(var.public_key_path)}"
+}

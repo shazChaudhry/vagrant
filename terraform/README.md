@@ -30,11 +30,11 @@ On the platform where docker engine is installed, execute the following commands
 5. `cd infra/terraform`
 
 Terraform docker image is available at https://hub.docker.com/r/hashicorp/terraform/. Execute the following commands to run terraform:
-1. `alias terraform='docker run -it --rm --name terraform -v ~/.aws/credentials:/home/root/.aws/credentials -v $PWD:/terraform -w /terraform hashicorp/terraform'`
+1. `alias terraform='docker run -it --rm --name terraform -v ~/.ssh/id_rsa.pub:/home/root/.ssh/id_rsa.pub -v ~/.aws/credentials:/home/root/.aws/credentials -v $PWD:/terraform -w /terraform hashicorp/terraform'`
 2. `terraform --version`
 3. `terraform init`
-4. `terraform plan -out terraform.plan`
-5. `terraform apply terraform.plan`
+4. `terraform plan`
+5. `terraform apply`
 6. `terraform show`
 
 #### Clean up
