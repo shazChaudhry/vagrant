@@ -1,5 +1,5 @@
 provider "aws" {
-  region                  = "${var.aws_region}"
+  region                  = "${var.region}"
   shared_credentials_file = "${var.aws_credentials}"
   profile                 = "default"
 }
@@ -31,10 +31,12 @@ resource "aws_route_table" "custom_routetable" {
   }
 }
 
+data "aws_availability_zones" "available" {}
+
 resource "aws_subnet" "public" {
   vpc_id                  = "${aws_vpc.vpc.id}"
   cidr_block              = "10.0.0.0/24"
-  availability_zone       = "eu-west-2a"
+  availability_zone       = "${data.aws_availability_zones.available.names[0]}"
   map_public_ip_on_launch = true
   tags {
     Name = "Public subnet"
@@ -73,7 +75,7 @@ resource "aws_route_table" "private_routetable" {
 resource "aws_subnet" "private" {
   vpc_id                  = "${aws_vpc.vpc.id}"
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "eu-west-2b"
+  availability_zone       = "${data.aws_availability_zones.available.names[1]}"
 
   tags {
     Name = "Private subnet"
@@ -96,28 +98,10 @@ resource "aws_security_group" "WebServerSG" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["${aws_subnet.private.cidr_block}"]
-  }
-  egress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["${aws_subnet.private.cidr_block}"]
   }
   egress {
     from_port   = 0
@@ -138,19 +122,13 @@ resource "aws_security_group" "DBServerSG" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${aws_subnet.public.cidr_block}"]
+    security_groups = ["${aws_security_group.WebServerSG.id}"]
   }
   ingress {
     from_port   = 3306
     to_port     = 3306
     protocol    = "tcp"
-    cidr_blocks = ["${aws_subnet.public.cidr_block}"]
-  }
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    self = true
+    security_groups = ["${aws_security_group.WebServerSG.id}"]
   }
   egress {
     from_port   = 0
@@ -166,4 +144,77 @@ resource "aws_security_group" "DBServerSG" {
 resource "aws_key_pair" "auth" {
   key_name   = "deployer-key"
   public_key = "${file(var.public_key_path)}"
+}
+
+resource "aws_vpc_dhcp_options" "mydhcp" {
+    domain_name = "${var.DnsZoneName}"
+    domain_name_servers = ["AmazonProvidedDNS"]
+    tags {
+      Name = "Internal DHCP"
+    }
+}
+
+resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+    vpc_id = "${aws_vpc.vpc.id}"
+    dhcp_options_id = "${aws_vpc_dhcp_options.mydhcp.id}"
+}
+
+resource "aws_route53_zone" "main" {
+  name = "${var.DnsZoneName}"
+  vpc_id = "${aws_vpc.vpc.id}"
+  comment = "Managed by terraform"
+}
+
+resource "aws_route53_record" "database" {
+   zone_id = "${aws_route53_zone.main.zone_id}"
+   name = "mydatabase.${var.DnsZoneName}"
+   type = "A"
+   ttl = "300"
+   records = ["${aws_instance.database.private_ip}"]
+}
+
+resource "aws_instance" "phpapp" {
+  ami           = "${lookup(var.AmiLinux, var.region)}"
+  instance_type = "t2.micro"
+  associate_public_ip_address = "true"
+  subnet_id = "${aws_subnet.public.id}"
+  vpc_security_group_ids = ["${aws_security_group.WebServerSG.id}"]
+  key_name = "${var.key_name}"
+  tags {
+        Name = "phpapp"
+  }
+  user_data = <<HEREDOC
+  #!/bin/bash
+  yum update -y
+  yum install -y httpd24 php56 php56-mysqlnd
+  service httpd start
+  chkconfig httpd on
+  echo "<?php" >> /var/www/html/calldb.php
+  echo "\$conn = new mysqli('mydatabase.domain.internal', 'root', 'secret', 'test');" >> /var/www/html/calldb.php
+  echo "\$sql = 'SELECT * FROM mytable'; " >> /var/www/html/calldb.php
+  echo "\$result = \$conn->query(\$sql); " >>  /var/www/html/calldb.php
+  echo "while(\$row = \$result->fetch_assoc()) { echo 'the value is: ' . \$row['mycol'] ;} " >> /var/www/html/calldb.php
+  echo "\$conn->close(); " >> /var/www/html/calldb.php
+  echo "?>" >> /var/www/html/calldb.php
+HEREDOC
+}
+
+resource "aws_instance" "database" {
+  ami           = "${lookup(var.AmiLinux, var.region)}"
+  instance_type = "t2.micro"
+  associate_public_ip_address = "false"
+  subnet_id = "${aws_subnet.private.id}"
+  vpc_security_group_ids = ["${aws_security_group.DBServerSG.id}"]
+  key_name = "${var.key_name}"
+  tags {
+        Name = "database"
+  }
+  user_data = <<HEREDOC
+  #!/bin/bash
+  yum update -y && yum install -y mysql55-server && service mysqld start
+  /usr/bin/mysqladmin -u root password 'secret'
+  mysql -u root -psecret -e "create user 'root'@'%' identified by 'secret';" mysql
+  mysql -u root -psecret -e 'CREATE TABLE mytable (mycol varchar(255));' test
+  mysql -u root -psecret -e "INSERT INTO mytable (mycol) values ('linuxacademythebest') ;" test
+HEREDOC
 }
