@@ -12,11 +12,11 @@ This repository uses AWS provided modules from [Terraform Module Registry](https
 - It is assumed you are already familier with the <a name="Reference">referenced</a> tutorial
 - You have Terraform >= v0.10.7
 - AWS credentials are available at: "~/.aws/credentials"
-    ```
-    [default]
-    aws_access_key_id = <KEY>
-    aws_secret_access_key = <SECRET>
-    ```
+```
+[default]
+aws_access_key_id = <KEY>
+aws_secret_access_key = <SECRET>
+```
 
 ### Instructions
 ```
