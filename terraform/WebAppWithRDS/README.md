@@ -9,7 +9,7 @@ A common scenario includes an Amazon RDS DB instance in an Amazon VPC, that shar
 This repository uses AWS provided modules from [Terraform Module Registry](https://registry.terraform.io/)
 
 ### Assumption
-- It is assumed you are already familier with the <a name="Reference">referenced</a> tutorial
+- It is assumed you are already familier with the [referenced](Reference) tutorial
 - You have Terraform >= v0.10.7
 - AWS credentials are available at: "~/.aws/credentials"
 ```
