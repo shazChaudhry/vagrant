@@ -8,6 +8,6 @@ variable "aws_credentials" {
 }
 
 variable "DnsZoneName" {
-  default     = "domain.internal"
+  default     = "ci.internal"
   description = "the internal dns name"
 }

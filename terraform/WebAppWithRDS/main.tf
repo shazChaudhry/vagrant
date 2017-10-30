@@ -108,22 +108,32 @@ module "ec2-instance" {
     }
 }
 
+# https://registry.terraform.io/modules/KoeSystems/route53/aws/0.1.1
+# Terraform AWS Route53 module to create public hosted zones
 module "route53" {
     source = "KoeSystems/route53/aws"
-
     domain_name    = "${var.DnsZoneName}"
 }
 
-# # Terraform Cluster Domain (e.g. `prod.ourcompany.com`)
+# Terraform Cluster Domain (e.g. `prod.ourcompany.com`)
 # module "route53-cluster-zone" {
 #     source = "cloudposse/route53-cluster-zone/aws"
 #
 #     # insert the 3 required variables here
 # }
-#
-# # Terraform Module to define a consistent cluster hostname
-# module "route53-cluster-hostname" {
-#     source = "cloudposse/route53-cluster-hostname/aws"
-#
-#     # insert the 2 required variables here
-# }
+
+# https://registry.terraform.io/modules/cloudposse/route53-cluster-hostname/aws/0.1.1
+# Terraform Module to define a consistent cluster hostname
+module "webappdb" {
+    source      = "cloudposse/route53-cluster-hostname/aws"
+    zone_id     = "${module.route53.primary_public_zone_id}"
+    name        = "webappdb"
+    records     = ["${module.rds.this_db_instance_address}"]
+}
+
+module "webapp" {
+    source      = "cloudposse/route53-cluster-hostname/aws"
+    zone_id     = "${module.route53.primary_public_zone_id}"
+    name        = "webapp"
+    records     = ["${module.ec2-instance.public_ip}"]
+}
