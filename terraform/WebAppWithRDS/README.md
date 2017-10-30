@@ -10,7 +10,7 @@ This repository uses AWS provided modules from [Terraform Module Registry](https
 
 ### Assumption
 - It is assumed you are already familier with the tutorial mentioned in the reference section below
-- You have Terraform >= v0.10.7
+- You have installed Terraform >= v0.10.7
 - AWS credentials are available at: "~/.aws/credentials"
 ```
 [default]
@@ -20,8 +20,7 @@ aws_secret_access_key = <SECRET>
 
 ### Instructions
 ```
-git clone git@github.com:shazChaudhry/infra.git
-cd infra/terraform/WebAppWithRDS
+git clone git@github.com:shazChaudhry/infra.git && cd infra/terraform/WebAppWithRDS
 terraform init
 terraform plan
 terraform apply
@@ -33,4 +32,4 @@ terraform destroy
 ```
 
 ### Reference
-[AWS Tutorial: Create a Web Server and an Amazon RDS Database](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.html)
+[AWS Management Console Tutorial: Create a Web Server and an Amazon RDS Database](http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Tutorials.html)
