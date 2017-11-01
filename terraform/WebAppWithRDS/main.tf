@@ -4,6 +4,14 @@ provider "aws" {
   profile                          = "default"
 }
 
+resource "aws_vpc_dhcp_options" "WepAppDHCP" {
+    domain_name         = "${var.DnsZoneName}"
+    domain_name_servers = ["AmazonProvidedDNS"]
+    tags {
+      Name              = "WepApp DHCP"
+    }
+}
+
 module "vpc" {
     source = "terraform-aws-modules/vpc/aws"
 
@@ -21,6 +29,17 @@ module "vpc" {
       Owner                       = "DevOps"
       Environment                 = "CI"
     }
+}
+
+resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+    vpc_id          = "${module.vpc.vpc_id}"
+    dhcp_options_id = "${aws_vpc_dhcp_options.WepAppDHCP.id}"
+}
+
+resource "aws_route53_zone" "main" {
+  name    = "${var.DnsZoneName}"
+  vpc_id  = "${module.vpc.vpc_id}"
+  comment = "private hosted zone managed by terraform"
 }
 
 module "WebApp_sg" {
@@ -59,9 +78,10 @@ module "rds" {
     source = "terraform-aws-modules/rds/aws"
 
     allocated_storage             = 20
+    auto_minor_version_upgrade    = true
     backup_window                 = "03:00-06:00"
     engine                        = "mysql"
-    engine_version                = "5.7.11"
+    engine_version                = "5.7.19"
     identifier                    = "webappdb-instance"
     instance_class                = "db.t2.micro"
     maintenance_window            = "Mon:00:00-Mon:03:00"
@@ -72,11 +92,11 @@ module "rds" {
     family                        = "mysql5.7"
     parameters = [
       {
-        name = "character_set_client"
+        name  = "character_set_client"
         value = "utf8"
       },
       {
-        name = "character_set_server"
+        name  = "character_set_server"
         value = "utf8"
       }
     ]
@@ -86,6 +106,14 @@ module "rds" {
       Environment                 = "CI"
     }
     vpc_security_group_ids        = ["${module.DB_sg.this_security_group_id}"]
+}
+
+resource "aws_route53_record" "database" {
+   zone_id  = "${aws_route53_zone.main.zone_id}"
+   name     = "mydatabase.${var.DnsZoneName}"
+   type     = "A"
+   ttl      = "300"
+   records  = ["${module.rds.this_db_instance_address}"]
 }
 
 module "ec2-instance" {
@@ -106,34 +134,4 @@ module "ec2-instance" {
       Owner                       = "DevOps"
       Environment                 = "CI"
     }
-}
-
-# https://registry.terraform.io/modules/KoeSystems/route53/aws/0.1.1
-# Terraform AWS Route53 module to create public hosted zones
-module "route53" {
-    source = "KoeSystems/route53/aws"
-    domain_name    = "${var.DnsZoneName}"
-}
-
-# Terraform Cluster Domain (e.g. `prod.ourcompany.com`)
-# module "route53-cluster-zone" {
-#     source = "cloudposse/route53-cluster-zone/aws"
-#
-#     # insert the 3 required variables here
-# }
-
-# https://registry.terraform.io/modules/cloudposse/route53-cluster-hostname/aws/0.1.1
-# Terraform Module to define a consistent cluster hostname
-module "webappdb" {
-    source      = "cloudposse/route53-cluster-hostname/aws"
-    zone_id     = "${module.route53.primary_public_zone_id}"
-    name        = "webappdb"
-    records     = ["${module.rds.this_db_instance_address}"]
-}
-
-module "webapp" {
-    source      = "cloudposse/route53-cluster-hostname/aws"
-    zone_id     = "${module.route53.primary_public_zone_id}"
-    name        = "webapp"
-    records     = ["${module.ec2-instance.public_ip}"]
 }
