@@ -1,6 +1,0 @@
----
-# run locally here, yadda yadda yadda
-- hosts: local
-  connection: local
-  roles:
-    - nginx
