@@ -27,7 +27,7 @@ On the platform where docker engine is installed, execute the following commands
 2. `git version`
 3. `git clone https://github.com/shazChaudhry/infra.git`
 4. `sudo chown -R $USER infra`
-5. `cd infra/terraform/two-tier`
+5. `cd infra/terraform/two-tiers`
 
 Terraform docker image is available at https://hub.docker.com/r/hashicorp/terraform/. Execute the following commands to run terraform:
 1. `alias terraform='docker run -it --rm --name terraform -v ~/.ssh/id_rsa.pub:/home/root/.ssh/id_rsa.pub -v ~/.aws/credentials:/home/root/.aws/credentials -v $PWD:/terraform -w /terraform hashicorp/terraform'`
