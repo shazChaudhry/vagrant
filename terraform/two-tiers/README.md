@@ -4,7 +4,7 @@ As a DevOps team member, I want to build infrastructure _([AWS Scenario 2](http:
 If you don't have an AWS account, create [free-tier](https://aws.amazon.com/free/) one now.
 
 <p align="center">
-  <img src="../pics/aws-infra.png" alt="AWS infra" style="width: 250px;"/>
+  <img src="../pics/user_6212_58f4de3f53474.png_800.jpg" alt="AWS infra" style="width: 250px;"/>
 </p>
 
 #### Assumptions
@@ -17,7 +17,9 @@ If you don't have an AWS account, create [free-tier](https://aws.amazon.com/free
     ```
 
 #### Prerequisite if standing up a vagrant box
-If of some reason docker can not be run natively on your platform, feel free to use the provided Vagrantfile to setup a VM which will have a docker engine installed. Vagrant coppies a number of files and folders (like aws credentials) from host to guest machine _(Modify the Vagrantfile as per your needs)_
+If of some reason docker can not be run natively on your platform, feel free to use the provided Vagrantfile to setup a VM which will have a docker engine installed.
+
+Vagrant coppies a number of files and folders (like aws credentials) from host to guest machine _(Modify the Vagrantfile as per your needs)_
 - Run `vagrant up` command to create a VM
 -	Run `vagrant ssh` to log into the VM
 
@@ -37,10 +39,20 @@ Terraform docker image is available at https://hub.docker.com/r/hashicorp/terraf
 5. `terraform apply tfplan`
 6. `terraform show`
 
+#### Testing
+- Navigate to https://console.aws.amazon.com/ec2 page
+- On instance plage, make a note of public IP of 'phpapp' instance
+- Open a new tab in your web browser, and visit `http://[PHPAPP_IP]/calldb.php`
+- If all has gone well, then you should see the following text:
+  - `the value is: linuxacademythebest`
+
 #### Clean up
-1. `terraform destroy -force`
+- `terraform destroy -force`
 
 #### References
-- Tutorial: https://simonfredsted.com/1459
+For the purpose of learning Terraform, the idea for this repository was taken from the Linux Academy; A complete AWS environment with Terraform: https://linuxacademy.com/howtoguides/posts/show/topic/13922-a-complete-aws-environment-with-terraform
+
+##### Other refs
+I have also found these blogs useful in learning Terraform:
 - AWS "Scenario 2" blog: https://nickcharlton.net/posts/terraform-aws-vpc.html
-- AWS environment with Terraform: https://linuxacademy.com/howtoguides/posts/show/topic/13922-a-complete-aws-environment-with-terraform
+- Tutorial: https://simonfredsted.com/1459
