@@ -95,31 +95,31 @@ module "rds" {
   # Specifies whether or not to create this database from a snapshot. This correlates to the snapshot ID you'd find in the RDS console, e.g: rds:production-2015-06-26-06-05
   # snapshot_identifier        = ""
 
+
   # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html
   #replicate_source_db        = ""
 
-  allocated_storage          = 20 # Required unless a snapshot_identifier or replicate_source_db is provided
-  engine                     = "mysql" # Required unless a snapshot_identifier or replicate_source_db is provided
-  username                   = "webapp" # Required unless a snapshot_identifier or replicate_source_db is provided
-  password                   = "Password01" # Required unless a snapshot_identifier or replicate_source_db is provided
-  engine_version             = "5.7.19"
-  identifier                 = "webappdb"
-  instance_class             = "db.t2.micro"
-  name                       = "webapp"
-  port                       = "3306"
-  copy_tags_to_snapshot      = true
-  family                     = "mysql5.7"
-  skip_final_snapshot        = false
-  final_snapshot_identifier  = "webappdb-final"
-  subnet_ids                 = ["${module.vpc.private_subnets}"]
-  vpc_security_group_ids     = ["${module.DB_sg.this_security_group_id}"]
+  allocated_storage         = 20                                         # Required unless a snapshot_identifier or replicate_source_db is provided
+  engine                    = "mysql"                                    # Required unless a snapshot_identifier or replicate_source_db is provided
+  username                  = "webapp"                                   # Required unless a snapshot_identifier or replicate_source_db is provided
+  password                  = "Password01"                               # Required unless a snapshot_identifier or replicate_source_db is provided
+  engine_version            = "5.7.19"
+  identifier                = "webappdb"
+  instance_class            = "db.t2.micro"
+  name                      = "webapp"
+  port                      = "3306"
+  copy_tags_to_snapshot     = true
+  family                    = "mysql5.7"
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "webappdb-final"
+  subnet_ids                = ["${module.vpc.private_subnets}"]
+  vpc_security_group_ids    = ["${module.DB_sg.this_security_group_id}"]
   # apply_immediately          = true
   allow_major_version_upgrade = true
-  auto_minor_version_upgrade = true
-  backup_retention_period    = 5
-  backup_window              = "03:00-06:00"
-  maintenance_window         = "Mon:00:00-Mon:03:00"
-
+  auto_minor_version_upgrade  = true
+  backup_retention_period     = 5
+  backup_window               = "03:00-06:00"
+  maintenance_window          = "Mon:00:00-Mon:03:00"
   parameters = [
     {
       name  = "character_set_client"
@@ -130,7 +130,6 @@ module "rds" {
       value = "utf8"
     },
   ]
-
   tags = {
     Name        = "${var.tags[1]}"
     Owner       = "${var.tags[0]}"
@@ -139,8 +138,8 @@ module "rds" {
 }
 
 resource "aws_db_snapshot" "snapshot" {
-    db_instance_identifier = "${module.rds.this_db_instance_id}"
-    db_snapshot_identifier = "webappdb"
+  db_instance_identifier = "${module.rds.this_db_instance_id}"
+  db_snapshot_identifier = "webappdb"
 }
 
 # https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-values-weighted.html?shortFooter=true#rrsets-values-weighted-name
@@ -149,49 +148,51 @@ resource "aws_route53_record" "db" {
   name    = "db"
   type    = "CNAME"
   ttl     = "5"
+
   weighted_routing_policy {
     weight = 0
   }
+
   set_identifier = "db"
-  records = ["${module.rds.this_db_instance_address}"]
+  records        = ["${module.rds.this_db_instance_address}"]
 }
 
 # When we need to create an EC2 resource on AWS using Terraform, we need to specify the AMI id to get the correct image. The id is not easy to memorise and it changes depending on the zone we are working one. On every new release the id changes again. So, how can we be sure to get the correct ID for our region, of the latest image available for a given Linux distribution?
 
 # Find the most recent image by visiting "LaunchInstanceWizard --> Community AMIs page and selecting operating system, architecture and root device type"
 data "aws_ami" "ami" {
-    most_recent = true
+  most_recent = true
 
-    filter {
-        name   = "name"
-        values = ["amzn-ami-hvm-*-x86_64-gp2",]
-    }
+  filter {
+    name   = "name"
+    values = ["amzn-ami-hvm-*-x86_64-gp2"]
+  }
 
-    filter {
-        name   = "virtualization-type"
-        values = ["hvm"]
-    }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 
-    filter {
-        name   = "root-device-type"
-        values = ["ebs"]
-    }
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
 
-    owners = ["amazon"]
+  owners = ["amazon"]
 }
 
-module "ec2-instance" "webapp"{
+module "ec2-instance" "webapp" {
   source = "terraform-aws-modules/ec2-instance/aws"
 
-  ami                    = "${data.aws_ami.ami.id}"
-  instance_type          = "t2.micro"
-  iam_instance_profile   = "shaz"
-  name                   = "WebApp"
+  ami                         = "${data.aws_ami.ami.id}"
+  instance_type               = "t2.micro"
+  iam_instance_profile        = "shaz"
+  name                        = "WebApp"
   associate_public_ip_address = true
-  vpc_security_group_ids = ["${module.WebApp_sg.this_security_group_id}"]
-  availability_zone      = "eu-west-2a"
-  key_name               = "personal"
-  subnet_id              = "${module.vpc.public_subnets[0]}"
+  vpc_security_group_ids      = ["${module.WebApp_sg.this_security_group_id}"]
+  availability_zone           = "eu-west-2a"
+  key_name                    = "personal"
+  subnet_id                   = "${module.vpc.public_subnets[0]}"
 
   tags = {
     Name        = "${var.tags[1]}"
@@ -212,11 +213,13 @@ resource "aws_route53_record" "wepapp" {
   name    = "wepapp"
   type    = "CNAME"
   ttl     = "5"
+
   weighted_routing_policy {
     weight = 0
   }
+
   set_identifier = "wepapp"
-  records = ["${module.ec2-instance.private_dns}"]
+  records        = ["${module.ec2-instance.private_dns}"]
 }
 
 # resource "aws_s3_bucket" "bucket" {

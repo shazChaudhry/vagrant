@@ -13,6 +13,6 @@ variable "DnsZoneName" {
 }
 
 variable "tags" {
-  default = ["DevOps", "CI"]
+  default     = ["DevOps", "CI"]
   description = "Project tags"
 }
