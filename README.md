@@ -1,9 +1,9 @@
 **User story**
-- As a DevOps team member I want to automate setting up of two ubuntu based nodes with [Vagrant](https://www.vagrantup.com/) for development purpose so that I can distribute Docker Swarm mode services in a cluster configuration.
+- As a DevOps team member I want to automate setting up of two nodes _(either ubuntu or centos)_ with [Vagrant](https://www.vagrantup.com/) for development purpose and configure them to form docker swarm mode.
 
 **Assumptions**
 - Development machine is Windows 10
--	At least 10GB free RAM is available on your machine. Otherwise, you will need to edit Vagrantfile to adjust available RAM for your machine:
+-	At least 8GB free RAM is available on your machine. Otherwise, you will need to edit Vagrantfile to adjust available RAM for your machine:
   -	`v.customize ["modifyvm", :id, "--memory", <MEMORY_ALLOCATION>]`
 
 **Prerequisite:**
@@ -13,6 +13,7 @@
 -	Install [Vagrant Host Manager](https://github.com/devopsgroup-io/vagrant-hostmanager) plugin by running ```vagrant plugin install vagrant-hostmanager``` in Git bash. This will update host files on both guest and host machines.
 
 **Instructions:**
+- Change directory to one of the sub directories depending on your desired VMs
 -	Run ```vagrant up``` command which will setup a Docker swarm mode cluster; 1xMaster and 1xWorker
   - ```vagrant ssh node1``` to log into the master node
   - ```vagrant ssh node2``` to log into the worker node
