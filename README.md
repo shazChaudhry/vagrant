@@ -17,6 +17,4 @@
 -	Run ```vagrant up``` command which will setup a Docker swarm mode cluster; 1xMaster and 1xWorker
   - ```vagrant ssh node1``` to log into the master node
   - ```vagrant ssh node2``` to log into the worker node
-- Infrastructure visualizer is availabe at [http://node1:9080](http://node1:9080). You should see two nodes; one of which is a master and the second one is a worker
-- Portainer is available at [http://node1:9000](http://node1:9000). This UI was provisioned as part of running the "vagran upt" command.
- - Portainer documentation is [here](https://hub.docker.com/r/portainer/portainer/) on github.
+- Portainer is available at [http://node1:9090](http://node1:9090). This UI was provisioned as part of running the "vagran upt" command. Portainer documentation is [here](https://hub.docker.com/r/portainer/portainer/) on github.
