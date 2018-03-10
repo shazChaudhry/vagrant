@@ -11,6 +11,17 @@ docker swarm init --advertise-addr 192.168.99.101 --listen-addr 192.168.99.101:2
 docker swarm join-token --quiet worker > /vagrant/worker_token
 SCRIPT
 
+$install_additional_tools = <<SCRIPT
+apt install -y python-pip && pip install --upgrade pip && pip install ansible
+
+apt install -y zip unzip
+wget https://releases.hashicorp.com/terraform/0.11.3/terraform_0.11.3_linux_amd64.zip
+unzip terraform_0.11.3_linux_amd64.zip
+mv terraform /usr/local/bin/
+terraform --version
+rm -f *.zip
+SCRIPT
+
 $docker_swarm_join_worker = <<SCRIPT
 echo "============== Joining swarm cluster as worker ====================="
 docker swarm join --token $(cat /vagrant/worker_token) 192.168.99.101:2377
@@ -37,7 +48,7 @@ Vagrant.configure("2") do |config|
     node1.vm.provision "shell", inline: "chmod 600 /home/vagrant/.ssh/*"
     node1.vm.provision "file", source: "~/.aws", destination: "$HOME/.aws"
     node1.vm.provision "shell", inline: "chmod 600 /home/vagrant/.aws/*"
-		node1.vm.provision :shell, inline: "apt-get install -y python-pip && pip install --upgrade pip && pip install ansible"
+    node1.vm.provision :shell, inline: $install_additional_tools
 		node1.vm.provision "docker" do |d|
 			d.run "Portainer",
 				image: "portainer/portainer",
