@@ -13,7 +13,7 @@ docker swarm join --token $(cat /vagrant/worker_token) 192.168.99.101:2377
 SCRIPT
 
 Vagrant.configure("2") do |config|
-	config.vm.box = "bento/centos-7.3"
+	config.vm.box = "bento/centos-7.4"
 	config.hostmanager.enabled = true
 	config.hostmanager.manage_host = true
 	config.hostmanager.manage_guest = true
