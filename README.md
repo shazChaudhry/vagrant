@@ -14,7 +14,7 @@
 -	Install [Vagrant Host Manager](https://github.com/devopsgroup-io/vagrant-hostmanager) plugin by running ```vagrant plugin install vagrant-hostmanager``` in Git bash. This will update host files on both guest and host machines.
 
 **Instructions:**
-- Change directory to Ubunto sub directory
+- Change directory to Ubuntu sub directory
 -	Run ```vagrant up``` command which will setup a Docker swarm mode cluster; 1xMaster and 1xWorker
 - ```vagrant ssh node1``` to log into the master node
   - ```cd /vagrant```
