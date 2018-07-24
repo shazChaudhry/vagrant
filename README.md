@@ -22,3 +22,6 @@
   - ```docker stack services portainer``` List the services in the portainer stack
   - Portainer is available at [http://node1:9000](http://node1:9000). Portainer documentation is [here](https://hub.docker.com/r/portainer/portainer/) on github
 - ```vagrant ssh node2``` to log into the worker node
+
+**Clean up:**
+- ```vagrant destroy --force``` destroy all VMs that were created above
