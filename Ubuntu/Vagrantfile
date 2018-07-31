@@ -15,7 +15,7 @@ $install_additional_tools = <<SCRIPT
 apt install -y python-pip && pip install --upgrade pip && pip install ansible
 
 apt install -y zip unzip
-wget https://releases.hashicorp.com/terraform/0.11.6/terraform_0.11.7_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip
 unzip terraform_0.11.7_linux_amd64.zip
 mv terraform /usr/local/bin/
 terraform --version
