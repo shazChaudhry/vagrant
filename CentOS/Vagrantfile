@@ -12,6 +12,24 @@ echo "============== Joining swarm cluster as worker ====================="
 docker swarm join --token $(cat /vagrant/worker_token) 192.168.99.101:2377
 SCRIPT
 
+$install_ansible = <<SCRIPT
+yum install -y epel-release
+yum install -y ansible
+SCRIPT
+
+$install_python = <<SCRIPT
+yum install -y python
+SCRIPT
+
+$install_terraform = <<SCRIPT
+yum install -y zip unzip
+wget https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip
+unzip terraform_0.11.8_linux_amd64.zip
+mv terraform /usr/local/bin/
+terraform --version
+rm -f *.zip
+SCRIPT
+
 Vagrant.configure("2") do |config|
 	config.vm.box = "bento/centos-7.4"
 	config.hostmanager.enabled = true
@@ -24,12 +42,16 @@ Vagrant.configure("2") do |config|
 		node1.vm.network :private_network, ip: "192.168.99.101"
 		node1.vm.provider :virtualbox do |v|
 			v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-			v.customize ["modifyvm", :id, "--memory", 4000]
+			v.customize ["modifyvm", :id, "--memory", 6000]
 			v.customize ["modifyvm", :id, "--name", "node1"]
 		end
 		node1.vm.provision :shell, inline: $docker_swarm_init
 		node1.vm.provision "file", source: "~/.ssh", destination: "$HOME/.ssh"
     node1.vm.provision "shell", inline: "chmod 600 /home/vagrant/.ssh/*"
+		node1.vm.provision "file", source: "~/.aws", destination: "$HOME/.aws"
+    node1.vm.provision "shell", inline: "chmod 600 /home/vagrant/.aws/*"
+    node1.vm.provision :shell, inline: $install_ansible
+    node1.vm.provision :shell, inline: $install_terraform
 	end
 
 	config.vm.define "node2" do |node2|
@@ -43,6 +65,7 @@ Vagrant.configure("2") do |config|
 		node2.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "$HOME/.ssh/id_rsa.pub"
     node2.vm.provision "shell", inline: "cd /home/vagrant/.ssh && cat id_rsa.pub >> authorized_keys"
 		node2.vm.provision :shell, inline: $docker_swarm_join_worker
+    node2.vm.provision :shell, inline: $install_python
 	end
 
 end
