@@ -26,15 +26,14 @@ SCRIPT
 
 $install_terraform = <<SCRIPT
 apt-get install -y zip unzip
-wget https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip
-unzip terraform_0.11.8_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_linux_amd64.zip
+unzip terraform_0.11.10_linux_amd64.zip
 mv terraform /usr/local/bin/
 terraform --version
 rm -f *.zip
 SCRIPT
 
 Vagrant.configure("2") do |config|
-	# config.vm.box = "ubuntu/xenial64"
 	config.vm.box = "ubuntu/bionic64"
   config.vm.provision "docker"
 	config.hostmanager.enabled = true
